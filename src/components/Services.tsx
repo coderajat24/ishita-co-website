@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { FloatingCard } from "./FloatingCard";
 
 const Services = () => {
   const services = [
@@ -164,6 +165,9 @@ const Services = () => {
                 service.featured ? 'lg:col-span-1 ring-2 ring-blue-200' : ''
               }`}
             >
+              {/* Three.js floating animation */}
+              <FloatingCard />
+              
               {/* Gradient overlay on hover */}
               <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
               
