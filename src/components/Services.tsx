@@ -3,8 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { FloatingCard } from "./FloatingCard";
+import { useScrollAnimation, useStaggeredAnimation } from "@/hooks/useScrollAnimation";
 
 const Services = () => {
+  const headerAnimation = useScrollAnimation({ delay: 300 });
+  const ctaAnimation = useScrollAnimation({ delay: 500 });
+  const { containerRef: servicesRef, visibleItems: serviceItems } = useStaggeredAnimation(11, 100);
+
   const services = [
     {
       title: "Accounting & Bookkeeping",
@@ -142,7 +147,15 @@ const Services = () => {
       </div>
       
       <div className="container mx-auto px-4 relative">
-        <div className="text-center mb-20">
+        {/* Animated Header */}
+        <div 
+          ref={headerAnimation.ref as React.RefObject<HTMLDivElement>}
+          className={`text-center mb-20 transition-all duration-1000 ease-out ${
+            headerAnimation.isVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-12'
+          }`}
+        >
           <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-full text-blue-600 text-sm font-medium mb-6">
             <Sparkles className="w-4 h-4 mr-2" />
             Comprehensive Service Portfolio
@@ -157,13 +170,24 @@ const Services = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Animated Services Grid */}
+        <div 
+          ref={servicesRef as React.RefObject<HTMLDivElement>}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
           {services.map((service, index) => (
             <Card 
               key={index} 
-              className={`group relative overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 border-0 bg-white/80 backdrop-blur-sm ${
+              className={`group relative overflow-hidden hover:shadow-2xl transition-all duration-700 hover:-translate-y-2 border-0 bg-white/80 backdrop-blur-sm ${
                 service.featured ? 'lg:col-span-1 ring-2 ring-blue-200' : ''
+              } ${
+                serviceItems[index] 
+                  ? 'opacity-100 translate-y-0 scale-100' 
+                  : 'opacity-0 translate-y-8 scale-95'
               }`}
+              style={{
+                transitionDelay: `${index * 100}ms`
+              }}
             >
               {/* Three.js floating animation */}
               <FloatingCard />
@@ -173,14 +197,14 @@ const Services = () => {
               
               {service.featured && (
                 <div className="absolute top-4 right-4">
-                  <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0">
+                  <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0 animate-pulse">
                     Premium
                   </Badge>
                 </div>
               )}
               
               <CardHeader className="relative">
-                <div className={`w-3 h-12 bg-gradient-to-b ${service.gradient} rounded-full mb-4`}></div>
+                <div className={`w-3 h-12 bg-gradient-to-b ${service.gradient} rounded-full mb-4 transition-all duration-500 group-hover:h-16 group-hover:w-4`}></div>
                 <CardTitle className="text-xl font-bold text-slate-900 group-hover:text-slate-800 transition-colors">
                   {service.title}
                 </CardTitle>
@@ -201,18 +225,28 @@ const Services = () => {
                   ))}
                 </ul>
                 
-                {/* Hover indicator */}
-                <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {/* Premium hover indicator */}
+                <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100 opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:translate-y-0 translate-y-2">
                   <span className="text-sm font-medium text-slate-600">Learn More</span>
-                  <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform duration-300" />
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-0.5 bg-gradient-to-r from-transparent via-slate-400 to-transparent group-hover:via-blue-500 transition-colors duration-300"></div>
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 group-hover:text-blue-500 transition-all duration-300" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
         
-        {/* CTA Section */}
-        <div className="mt-20 text-center">
+        {/* Animated CTA Section */}
+        <div 
+          ref={ctaAnimation.ref as React.RefObject<HTMLDivElement>}
+          className={`mt-20 text-center transition-all duration-1000 ease-out ${
+            ctaAnimation.isVisible 
+              ? 'opacity-100 translate-y-0 scale-100' 
+              : 'opacity-0 translate-y-8 scale-95'
+          }`}
+        >
           <div className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 rounded-3xl p-12 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(-45deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
             <div className="relative">
@@ -222,9 +256,9 @@ const Services = () => {
               <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
                 Schedule a consultation with our experts and discover how we can accelerate your growth.
               </p>
-              <button className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-4 rounded-2xl font-medium text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
+              <button className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-4 rounded-2xl font-medium text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 group">
                 Start Your Journey
-                <ArrowRight className="inline ml-2 w-5 h-5" />
+                <ArrowRight className="inline ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
               </button>
             </div>
           </div>
